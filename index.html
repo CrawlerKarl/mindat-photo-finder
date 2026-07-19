@@ -1,0 +1,538 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Search mindat.org specimen photos for one mineral pictured with another — a query Mindat's form can run but never labels as such.">
+<meta name="color-scheme" content="light dark">
+<title>Specimen Photo Finder — Mindat</title>
+<style>
+  :root {
+    --fluorite: #7A4FCF;
+    --fluorite-soft: #EFE8FB;
+    --calcite: #C77A3A;
+    --calcite-soft: #FAEEE2;
+    --ground: #F4F2F7;
+    --surface: #FFFFFF;
+    --ink: #262230;
+    --muted: #6B6478;
+    --line: #DCD7E4;
+    --focus: #7A4FCF;
+    --serif: ui-serif, "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+    --sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --fluorite: #A585E8;
+      --fluorite-soft: #2A2140;
+      --calcite: #DD9B5C;
+      --calcite-soft: #35271A;
+      --ground: #17151C;
+      --surface: #211E29;
+      --ink: #EDEAF3;
+      --muted: #9C94AB;
+      --line: #332E3F;
+      --focus: #A585E8;
+    }
+  }
+  :root[data-theme="dark"] {
+    --fluorite: #A585E8;
+    --fluorite-soft: #2A2140;
+    --calcite: #DD9B5C;
+    --calcite-soft: #35271A;
+    --ground: #17151C;
+    --surface: #211E29;
+    --ink: #EDEAF3;
+    --muted: #9C94AB;
+    --line: #332E3F;
+    --focus: #A585E8;
+  }
+  :root[data-theme="light"] {
+    --fluorite: #7A4FCF;
+    --fluorite-soft: #EFE8FB;
+    --calcite: #C77A3A;
+    --calcite-soft: #FAEEE2;
+    --ground: #F4F2F7;
+    --surface: #FFFFFF;
+    --ink: #262230;
+    --muted: #6B6478;
+    --line: #DCD7E4;
+    --focus: #7A4FCF;
+  }
+
+  * { box-sizing: border-box; }
+
+  .page {
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.55;
+    min-height: 100vh;
+    padding: 32px 20px 64px;
+  }
+  .shell {
+    max-width: 720px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+
+  header { display: flex; flex-direction: column; gap: 6px; }
+  .eyebrow {
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 600;
+  }
+  h1 {
+    font-family: var(--serif);
+    font-size: 32px;
+    line-height: 1.15;
+    font-weight: 600;
+    margin: 0;
+    text-wrap: balance;
+  }
+  .lede { color: var(--muted); font-size: 15px; margin: 0; max-width: 60ch; }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .pair { display: flex; align-items: flex-end; gap: 12px; }
+  .field { display: flex; flex-direction: column; gap: 6px; flex: 1 1 0; min-width: 0; }
+  .joiner {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 18px;
+    color: var(--muted);
+    padding-bottom: 10px;
+    flex: 0 0 auto;
+  }
+  label {
+    font-size: 11px;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .dot { width: 8px; height: 8px; border-radius: 50%; flex: 0 0 auto; }
+  .dot-p { background: var(--fluorite); }
+  .dot-a { background: var(--calcite); }
+  .lbl-p { color: var(--fluorite); }
+  .lbl-a { color: var(--calcite); }
+
+  input[type="text"], select {
+    font-family: var(--sans);
+    font-size: 15px;
+    color: var(--ink);
+    background: var(--ground);
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    padding: 9px 11px;
+    width: 100%;
+    min-width: 0;
+  }
+  #primary { border-color: var(--fluorite); background: var(--fluorite-soft); }
+  #associate { border-color: var(--calcite); background: var(--calcite-soft); }
+  input:focus-visible, select:focus-visible, a:focus-visible, button:focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+  }
+
+  .narrow { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 12px; }
+
+  .actions { display: flex; flex-wrap: wrap; gap: 10px; }
+  .btn {
+    font-family: var(--sans);
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 7px;
+    padding: 10px 16px;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    color: var(--ink);
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .btn-primary {
+    background: var(--fluorite);
+    border-color: var(--fluorite);
+    color: #fff;
+  }
+  :root[data-theme="dark"] .btn-primary, :root[data-theme="dark"] .btn-both { color: #17151C; }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .btn-primary,
+    :root:not([data-theme="light"]) .btn-both { color: #17151C; }
+  }
+  .btn-both { background: var(--calcite); border-color: var(--calcite); color: #fff; }
+  .btn:hover { filter: brightness(1.06); }
+  .btn[aria-disabled="true"] { opacity: 0.45; pointer-events: none; }
+
+  .swap {
+    background: none;
+    border: 1px solid var(--line);
+    border-radius: 50%;
+    width: 30px; height: 30px;
+    cursor: pointer;
+    color: var(--muted);
+    font-size: 14px;
+    flex: 0 0 auto;
+    margin-bottom: 6px;
+    line-height: 1;
+  }
+  .swap:hover { color: var(--ink); border-color: var(--ink); }
+
+  .urlbox {
+    font-family: var(--mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 12px;
+    color: var(--muted);
+    background: var(--ground);
+    border: 1px dashed var(--line);
+    border-radius: 7px;
+    padding: 11px 12px;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  .note {
+    font-size: 13.5px;
+    color: var(--muted);
+    margin: 0;
+    padding-left: 12px;
+    border-left: 2px solid var(--line);
+  }
+  .note strong { color: var(--ink); font-weight: 600; }
+
+  .hint {
+    font-size: 13.5px;
+    background: var(--fluorite-soft);
+    border: 1px solid var(--fluorite);
+    border-radius: 7px;
+    padding: 9px 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .hint button {
+    font: inherit;
+    font-weight: 600;
+    border: none;
+    background: none;
+    color: var(--fluorite);
+    cursor: pointer;
+    text-decoration: underline;
+    padding: 0;
+  }
+  [hidden] { display: none !important; }
+
+  .presets { display: flex; flex-direction: column; gap: 9px; }
+  .preset-row { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip {
+    font-family: var(--sans);
+    font-size: 13px;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    color: var(--ink);
+    border-radius: 999px;
+    padding: 5px 12px;
+    cursor: pointer;
+  }
+  .chip:hover { border-color: var(--fluorite); color: var(--fluorite); }
+
+  h2 {
+    font-family: var(--serif);
+    font-size: 17px;
+    font-weight: 600;
+    margin: 0;
+  }
+  .legend { display: flex; flex-direction: column; gap: 7px; font-size: 13.5px; color: var(--muted); }
+  .legend div { display: flex; gap: 9px; align-items: baseline; }
+  .legend .dot { margin-top: 6px; }
+
+  @media (max-width: 620px) {
+    h1 { font-size: 26px; }
+    .pair { flex-wrap: wrap; }
+    .joiner { display: none; }
+    .narrow { grid-template-columns: 1fr; }
+    .swap { margin: 0 0 4px auto; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; animation: none !important; }
+  }
+</style>
+<style>
+  body { margin: 0; }
+  .themetoggle {
+    position: fixed; top: 14px; right: 14px; z-index: 10;
+    width: 34px; height: 34px; border-radius: 50%;
+    border: 1px solid var(--line); background: var(--surface);
+    color: var(--muted); font-size: 15px; cursor: pointer; line-height: 1;
+  }
+  .themetoggle:hover { color: var(--ink); border-color: var(--ink); }
+  .repofoot {
+    max-width: 720px; margin: 0 auto; padding: 28px 20px 0;
+    font-family: var(--sans); font-size: 13px; color: var(--muted);
+    background: var(--ground);
+  }
+  .repofoot a { color: var(--fluorite); }
+</style>
+</head>
+<body>
+<button class="themetoggle" id="themetoggle" type="button" aria-label="Toggle light or dark theme">&#9680;</button>
+
+
+<div class="page">
+<div class="shell">
+
+  <header>
+    <span class="eyebrow">Mindat · specimen photo search</span>
+    <h1>Find one mineral <em>with</em> another</h1>
+    <p class="lede">Composes a mindat.org photo search that their form can run but never labels as such — then hands it to Mindat to serve. Nothing is downloaded or copied here.</p>
+  </header>
+
+  <div class="card">
+    <div class="pair">
+      <div class="field">
+        <label for="primary" class="lbl-p"><span class="dot dot-p"></span>Primary mineral</label>
+        <input type="text" id="primary" list="species" autocomplete="off" spellcheck="false" placeholder="Fluorite" value="Fluorite">
+      </div>
+      <span class="joiner">with</span>
+      <button class="swap" id="swap" type="button" title="Swap the two minerals" aria-label="Swap primary and associate minerals">⇄</button>
+      <div class="field">
+        <label for="associate" class="lbl-a"><span class="dot dot-a"></span>Associate mineral</label>
+        <input type="text" id="associate" list="species" autocomplete="off" spellcheck="false" placeholder="Calcite" value="Calcite">
+      </div>
+    </div>
+
+    <div class="hint" id="hint" hidden>
+      <span id="hint-text"></span>
+      <button type="button" id="hint-apply"></button>
+    </div>
+
+    <div class="narrow">
+      <div class="field">
+        <label for="region">Region <span style="text-transform:none;letter-spacing:0;font-weight:400;color:var(--muted)">(any level)</span></label>
+        <input type="text" id="region" autocomplete="off" spellcheck="false" placeholder="Illinois">
+      </div>
+      <div class="field">
+        <label for="mtype">Photo type</label>
+        <select id="mtype">
+          <option value="0">All types</option>
+          <option value="1">Specimen (full view)</option>
+          <option value="2">Close-up / photomicrograph</option>
+          <option value="9">UV fluorescence — shortwave</option>
+          <option value="10">UV fluorescence — midwave</option>
+          <option value="11">UV fluorescence — longwave</option>
+          <option value="13">Specimen in situ</option>
+          <option value="38">Cut &amp; rough gem material</option>
+          <option value="6">Polished section / slice</option>
+          <option value="29">SEM</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="sort">Sort</label>
+        <select id="sort">
+          <option value="2">Newest first</option>
+          <option value="0">Standard locality order</option>
+          <option value="1">Alphabetical locality</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="actions">
+      <a class="btn btn-primary" id="go" href="#" target="_blank" rel="noopener noreferrer">Search <span id="go-label"></span></a>
+      <a class="btn" id="go-swap" href="#" target="_blank" rel="noopener noreferrer">Swapped <span id="swap-label"></span></a>
+      <button class="btn btn-both" id="go-both" type="button">Open both</button>
+      <button class="btn" id="copy" type="button">Copy URL</button>
+    </div>
+
+    <div class="urlbox" id="urlbox"></div>
+  </div>
+
+  <div class="card">
+    <h2>Why there are two searches</h2>
+    <div class="legend">
+      <div><span class="dot dot-p"></span><span><strong style="color:var(--ink)">Primary</strong> matches Mindat's structured species list for the photo — reliable, but only one mineral can go here.</span></div>
+      <div><span class="dot dot-a"></span><span><strong style="color:var(--ink)">Associate</strong> matches the caption text, so it only finds photos where the photographer actually wrote that mineral's name.</span></div>
+    </div>
+    <p class="note">Because the two fields search <strong>different things</strong>, running it both ways and taking the union is the honest version of "A with B" — that's what <strong>Open both</strong> does. It's also why a third mineral needs its own query: the caption field matches a <strong>phrase</strong>, not a set of keywords.</p>
+  </div>
+
+  <div class="card presets">
+    <h2>Starting points</h2>
+    <div class="preset-row" id="presets"></div>
+  </div>
+
+</div>
+</div>
+
+<datalist id="species"></datalist>
+
+<script>
+(() => {
+  const SPECIES = ["Acanthite","Adamite","Aegirine","Albite","Almandine","Amblygonite","Analcime","Anatase","Andradite","Anglesite","Anhydrite","Ankerite","Annabergite","Apatite","Apophyllite","Aragonite","Arsenopyrite","Astrophyllite","Augite","Aurichalcite","Autunite","Axinite","Azurite","Barite","Bementite","Benitoite","Beryl","Beryllonite","Biotite","Bornite","Boulangerite","Bournonite","Brookite","Brucite","Cacoxenite","Calcite","Caledonite","Carrollite","Cassiterite","Cavansite","Celestine","Cerussite","Chabazite","Chalcanthite","Chalcopyrite","Childrenite","Chondrodite","Chrysoberyl","Chrysocolla","Cinnabar","Clinochlore","Cobaltite","Colemanite","Columbite","Conichalcite","Copper","Cordierite","Corundum","Covellite","Creedite","Crocoite","Cuprite","Danburite","Datolite","Descloizite","Diamond","Diaspore","Dioptase","Dolomite","Dravite","Elbaite","Elpidite","Enargite","Epidote","Erythrite","Euclase","Eudialyte","Ferberite","Fluorapatite","Fluorite","Forsterite","Franklinite","Galena","Garnet","Goethite","Gold","Grossular","Gypsum","Halite","Hausmannite","Hedenbergite","Hematite","Hemimorphite","Herderite","Heulandite","Hubnerite","Hydroxylapatite","Ilmenite","Ilvaite","Inesite","Jamesonite","Jeremejevite","Kammererite","Krohnkite","Kyanite","Lazurite","Legrandite","Lepidolite","Leucite","Libethenite","Linarite","Ludlamite","Magnetite","Malachite","Manganocalcite","Marcasite","Mesolite","Microcline","Millerite","Mimetite","Molybdenite","Monazite","Mottramite","Muscovite","Natrolite","Nepheline","Okenite","Oligoclase","Olivenite","Opal","Orpiment","Orthoclase","Papagoite","Pectolite","Pentlandite","Phenakite","Phlogopite","Phosgenite","Piemontite","Platinum","Plumbogummite","Prehnite","Proustite","Pseudomalachite","Purpurite","Pyrargyrite","Pyrite","Pyromorphite","Pyrope","Pyroxmangite","Pyrrhotite","Quartz","Realgar","Rhodochrosite","Rhodonite","Rosasite","Rutile","Sapphirine","Scheelite","Schorl","Scolecite","Selenite","Senarmontite","Serandite","Siderite","Silver","Skutterudite","Smithsonite","Sodalite","Sperrylite","Spessartine","Sphalerite","Spinel","Spodumene","Stibnite","Stilbite","Stolzite","Strontianite","Sulphur","Talc","Tanzanite","Tennantite","Tetrahedrite","Titanite","Topaz","Torbernite","Tourmaline","Tremolite","Turquoise","Ulexite","Uvarovite","Vanadinite","Variscite","Vesuvianite","Villiaumite","Vivianite","Wavellite","Willemite","Wolframite","Wulfenite","Xenotime","Zincite","Zircon","Zoisite"];
+
+  const VARIETIES = {
+    "amethyst":"Quartz","citrine":"Quartz","smoky quartz":"Quartz","rose quartz":"Quartz",
+    "chalcedony":"Quartz","agate":"Quartz","jasper":"Quartz","onyx":"Quartz","carnelian":"Quartz",
+    "bloodstone":"Quartz","chrysoprase":"Quartz","tiger's eye":"Quartz","tigers eye":"Quartz",
+    "ametrine":"Quartz","herkimer diamond":"Quartz","rock crystal":"Quartz","prasiolite":"Quartz",
+    "aventurine":"Quartz","morion":"Quartz","cairngorm":"Quartz",
+    "aquamarine":"Beryl","emerald":"Beryl","morganite":"Beryl","heliodor":"Beryl","goshenite":"Beryl",
+    "ruby":"Corundum","sapphire":"Corundum",
+    "rubellite":"Elbaite","indicolite":"Elbaite","verdelite":"Elbaite","paraiba":"Elbaite",
+    "peridot":"Forsterite","alexandrite":"Chrysoberyl",
+    "tsavorite":"Grossular","hessonite":"Grossular","demantoid":"Andradite","rhodolite":"Pyrope",
+    "kunzite":"Spodumene","hiddenite":"Spodumene",
+    "iolite":"Cordierite","amazonite":"Microcline","moonstone":"Orthoclase","sunstone":"Oligoclase",
+    "satin spar":"Gypsum","alabaster":"Gypsum","lapis lazuli":"Lazurite",
+    "thulite":"Zoisite","indigo gabbro":"Zoisite"
+  };
+
+  const PRESETS = [
+    { p:"Fluorite",     a:"Calcite",      r:"Illinois",  t:"0",  label:"Fluorite + Calcite · Illinois" },
+    { p:"Fluorite",     a:"Calcite",      r:"",          t:"9",  label:"Fluorite + Calcite · UV shortwave" },
+    { p:"Pyromorphite", a:"Quartz",       r:"",          t:"1",  label:"Pyromorphite + Quartz" },
+    { p:"Rhodochrosite",a:"Tetrahedrite", r:"Colorado",  t:"0",  label:"Rhodochrosite + Tetrahedrite · Colorado" },
+    { p:"Azurite",      a:"Malachite",    r:"Arizona",   t:"0",  label:"Azurite + Malachite · Arizona" },
+    { p:"Smithsonite",  a:"Calcite",      r:"Tennessee", t:"0",  label:"Smithsonite + Calcite · Tennessee" },
+    { p:"Wulfenite",    a:"Mimetite",     r:"",          t:"2",  label:"Wulfenite + Mimetite · close-up" }
+  ];
+
+  const $ = id => document.getElementById(id);
+  const primary = $("primary"), associate = $("associate"), region = $("region"),
+        mtype = $("mtype"), sort = $("sort");
+
+  document.getElementById("species").innerHTML =
+    SPECIES.map(s => `<option value="${s}"></option>`).join("");
+
+  document.getElementById("presets").innerHTML =
+    PRESETS.map((p, i) => `<button class="chip" type="button" data-i="${i}">${p.label}</button>`).join("");
+
+  function buildURL(min, txt) {
+    const q = new URLSearchParams({
+      frm_id: "mls", cform_is_valid: "1",
+      minname: min || "",
+      cf_mls_page: "1",
+      region: region.value.trim(),
+      text: txt || "",
+      phototype: "M",
+      mtype: mtype.value,
+      potd: "0",
+      sort: sort.value,
+      submit_mls: "Search"
+    });
+    return "https://www.mindat.org/photosearch.php?" + q.toString();
+  }
+
+  function render() {
+    const p = primary.value.trim(), a = associate.value.trim();
+    const fwd = buildURL(p, a), rev = buildURL(a, p);
+
+    $("go").href = fwd;
+    $("go-swap").href = rev;
+    $("go-label").textContent = p && a ? `${p} with ${a}` : (p || "");
+    $("swap-label").textContent = p && a ? `${a} with ${p}` : "";
+    $("urlbox").textContent = fwd;
+
+    const noPrimary = !p;
+    $("go").setAttribute("aria-disabled", noPrimary ? "true" : "false");
+    const noPair = !p || !a;
+    ["go-swap","go-both"].forEach(id =>
+      $(id).setAttribute("aria-disabled", noPair ? "true" : "false"));
+
+    const key = p.toLowerCase();
+    const parent = VARIETIES[key];
+    const hint = $("hint");
+    if (parent && parent.toLowerCase() !== key) {
+      $("hint-text").textContent = `${p} is a variety of ${parent} — Mindat files most of these photos under ${parent}.`;
+      const btn = $("hint-apply");
+      btn.textContent = `Search ${parent} instead`;
+      btn.onclick = () => { primary.value = parent; render(); primary.focus(); };
+      hint.hidden = false;
+    } else {
+      hint.hidden = true;
+    }
+  }
+
+  [primary, associate, region, mtype, sort].forEach(el => {
+    el.addEventListener("input", render);
+    el.addEventListener("change", render);
+  });
+
+  $("swap").addEventListener("click", () => {
+    const t = primary.value; primary.value = associate.value; associate.value = t; render();
+  });
+
+  $("go-both").addEventListener("click", () => {
+    const p = primary.value.trim(), a = associate.value.trim();
+    if (!p || !a) return;
+    window.open(buildURL(p, a), "_blank", "noopener");
+    window.open(buildURL(a, p), "_blank", "noopener");
+  });
+
+  $("copy").addEventListener("click", async () => {
+    const btn = $("copy"), original = "Copy URL";
+    try {
+      await navigator.clipboard.writeText($("urlbox").textContent);
+      btn.textContent = "Copied";
+    } catch {
+      btn.textContent = "Press ⌘C";
+      const r = document.createRange();
+      r.selectNodeContents($("urlbox"));
+      const sel = window.getSelection();
+      sel.removeAllRanges(); sel.addRange(r);
+    }
+    setTimeout(() => { btn.textContent = original; }, 1600);
+  });
+
+  document.getElementById("presets").addEventListener("click", e => {
+    const chip = e.target.closest(".chip");
+    if (!chip) return;
+    const p = PRESETS[+chip.dataset.i];
+    primary.value = p.p; associate.value = p.a; region.value = p.r; mtype.value = p.t;
+    render();
+  });
+
+  render();
+})();
+</script>
+<div class="repofoot">
+  <p>Not affiliated with Mindat. This page stores nothing and copies nothing &mdash; it builds a
+  mindat.org search URL and sends you there, so every photo is served by Mindat under its own
+  photographer&rsquo;s licence. Mineral data &copy; mindat.org and the Hudson Institute of Mineralogy.</p>
+</div>
+<script>
+(() => {
+  const btn = document.getElementById('themetoggle');
+  const root = document.documentElement;
+  const saved = localStorage.getItem('theme');
+  if (saved) root.setAttribute('data-theme', saved);
+  btn.addEventListener('click', () => {
+    const dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const now = root.getAttribute('data-theme') || (dark ? 'dark' : 'light');
+    const next = now === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+  });
+})();
+</script>
+</body>
+</html>
