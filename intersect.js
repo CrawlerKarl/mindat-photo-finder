@@ -21,9 +21,13 @@
  */
 (() => {
   "use strict";
-  if (location.hostname !== "www.mindat.org" && location.hostname !== "mindat.org") {
-    alert("This tool runs on mindat.org.\n\nOpen www.mindat.org first, then click the bookmarklet again.");
-    location.href = "https://www.mindat.org/photosearch.php";
+  if (!/(^|\.)mindat\.org$/.test(location.hostname)) {
+    // Never navigate this tab — a silent same-tab redirect reads as "nothing
+    // happened". Open mindat in a NEW tab and say exactly what to do next.
+    const w = window.open("https://www.mindat.org/photosearch.php", "_blank");
+    alert("The finder runs on mindat.org pages.\n\n" +
+      (w ? "mindat.org is opening in a new tab — click this bookmark again over there."
+         : "Open www.mindat.org, then click this bookmark again there."));
     return;
   }
   if (window.__mmfPanel) { window.__mmfPanel.show(); return; }

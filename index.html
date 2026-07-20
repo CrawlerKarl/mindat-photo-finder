@@ -388,18 +388,33 @@
     Mindat's structured species list, and shows only photos carrying <em>all</em> of your minerals —
     with live progress, pause, and CSV export. Polite by design: sequential page views in your own
     browser session, ~0.8&thinsp;s apart, hard-capped.</p>
-    <div class="actions" style="align-items:center">
-      <a class="btn btn-primary" id="bml"
+    <p class="note" style="margin:0"><strong style="color:var(--ink)">Most reliable install
+    (60&nbsp;seconds, works in every desktop browser):</strong></p>
+    <ol style="margin:0;padding-left:22px;font-size:14px;display:flex;flex-direction:column;gap:6px">
+      <li><button class="btn" id="bmlcopy" type="button" style="padding:6px 12px;font-size:13px">Copy the bookmarklet code</button></li>
+      <li>Right-click your bookmarks bar &rarr; <strong>Add page&hellip;</strong> (Chrome) or
+        <strong>Bookmarks&nbsp;&rarr;&nbsp;Manage/Edit</strong> &rarr; new bookmark (Safari, Firefox, Edge)</li>
+      <li>Name it <em>Mineral Finder</em>, paste the code as the <strong>URL</strong>, save</li>
+      <li>Open any <strong>mindat.org</strong> page and click the new bookmark &mdash; a dark panel
+        slides in from the right</li>
+    </ol>
+    <div class="urlbox" id="bmlcode">javascript:(function(){var s=document.createElement('script');s.src='https://crawlerkarl.github.io/mindat-photo-finder/intersect.js?v='+Date.now();(document.body||document.documentElement).appendChild(s);})();</div>
+    <p class="note" style="margin:0">Or drag this button to the bookmarks bar:
+      <a class="btn btn-primary" id="bml" style="margin-left:6px"
          href="javascript:(function()%7Bvar%20s%3Ddocument.createElement('script')%3Bs.src%3D'https%3A%2F%2Fcrawlerkarl.github.io%2Fmindat-photo-finder%2Fintersect.js%3Fv%3D'%2BDate.now()%3B(document.body%7C%7Cdocument.documentElement).appendChild(s)%3B%7D)()%3B"
-         title="Drag me to your bookmarks bar">&#9670; Multi&#8209;Mineral Finder</a>
-      <span style="font-size:13.5px;color:var(--muted)">&larr; drag this to your bookmarks bar,
-      then click it while on any mindat.org page</span>
-    </div>
+         title="Drag me to your bookmarks bar">&#9670; Mineral Finder</a></p>
     <details>
-      <summary style="cursor:pointer;font-size:13.5px;color:var(--muted)">Can't drag it? (phones, some browsers)</summary>
-      <p class="note" style="margin:10px 0 8px">Make any bookmark, edit it, and replace its URL with:</p>
-      <div class="urlbox" id="bmlcode">javascript:(function(){var s=document.createElement('script');s.src='https://crawlerkarl.github.io/mindat-photo-finder/intersect.js?v='+Date.now();(document.body||document.documentElement).appendChild(s);})();</div>
-      <div class="actions" style="margin-top:8px"><button class="btn" id="bmlcopy" type="button">Copy bookmarklet code</button></div>
+      <summary style="cursor:pointer;font-size:13.5px;color:var(--muted)">Clicked it and the URL changed instead of a panel opening? Diagnose it here</summary>
+      <ul style="margin:10px 0 0;padding-left:20px;font-size:13.5px;color:var(--muted);display:flex;flex-direction:column;gap:6px">
+        <li>URL became <em>this page</em> &rarr; the drag saved the page, not the button.
+          Delete that bookmark and use the copy-paste install above.</li>
+        <li>URL became a mindat <em>&ldquo;File not found&rdquo;</em> page &rarr; your browser stripped the
+          <code>javascript:</code> prefix when saving. Right-click the bookmark &rarr; Edit &rarr; the URL
+          must begin with <code>javascript:(function()</code> &mdash; if it doesn't, re-paste the code
+          (and if the prefix vanishes on paste, type <code>javascript:</code> in front by hand).</li>
+        <li>Nothing at all &rarr; make sure you're on a normal mindat.org page (not the Cloudflare
+          &ldquo;checking your browser&rdquo; interstitial), then click again.</li>
+      </ul>
     </details>
     <p class="note" style="margin:0">Completeness, honestly stated: a photo is findable only if its
     caption mentions at least one of your minerals — the final species check is exact, the discovery
