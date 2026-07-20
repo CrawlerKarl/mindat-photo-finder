@@ -43,6 +43,31 @@ clearly stores structured species lists per photo (it prints them on every resul
 the search form nor the public API exposes a two-species structured query. This tool cannot beat
 Mindat's recall — only its ergonomics.
 
+## Three or more minerals — the bookmarklet
+
+Mindat has no AND search, so no URL can intersect 3+ minerals. The
+**Multi-Mineral Finder bookmarklet** (install from the tool page) does it from
+inside your own mindat.org session:
+
+1. **Probe** — for each mineral as a caption term, page-1 counts pick the
+   cheapest structural anchor among the others.
+2. **Sweep** — fetch every result page of each pairing, sequentially,
+   ~0.8 s apart (ordinary page views in your session; hard 900-page cap,
+   confirmation above 250, pause/stop any time, auto-pause if Mindat's bot
+   protection interjects).
+3. **Verify** — parse each row's structured species links (the ones Mindat
+   prints on every result) and keep only photos carrying **all** wanted
+   minerals; spelling variants (Baryte/Barite, Sulphur/Sulfur) are normalized.
+4. **Union** — dedupe across sweeps by photo id; live thumbnail grid,
+   CSV export, copy-links.
+
+Completeness, honestly stated: the *verification* is exact, but *discovery*
+rides on captions — a photo whose caption names none of your minerals cannot
+be found this way. The panel repeats this on every finished run.
+
+Example run: Fluorite + Baryte + Sphalerite in Tennessee → 82 specimen photos
+in ~3 minutes (36 page views).
+
 ## How it works
 
 It builds a `photosearch.php` query string and opens it on mindat.org:

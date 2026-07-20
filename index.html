@@ -380,6 +380,32 @@
     <div class="preset-row" id="presets"></div>
   </div>
 
+  <div class="card">
+    <h2>Three or more minerals</h2>
+    <p class="note" style="margin:0">Mindat has no AND search, so pages like this one can't intersect
+    three minerals for you — but a <strong style="color:var(--ink)">bookmarklet running on mindat.org
+    itself</strong> can. It sweeps each mineral as a caption term, verifies every result row against
+    Mindat's structured species list, and shows only photos carrying <em>all</em> of your minerals —
+    with live progress, pause, and CSV export. Polite by design: sequential page views in your own
+    browser session, ~0.8&thinsp;s apart, hard-capped.</p>
+    <div class="actions" style="align-items:center">
+      <a class="btn btn-primary" id="bml"
+         href="javascript:(function()%7Bvar%20s%3Ddocument.createElement('script')%3Bs.src%3D'https%3A%2F%2Fcrawlerkarl.github.io%2Fmindat-photo-finder%2Fintersect.js%3Fv%3D'%2BDate.now()%3B(document.body%7C%7Cdocument.documentElement).appendChild(s)%3B%7D)()%3B"
+         title="Drag me to your bookmarks bar">&#9670; Multi&#8209;Mineral Finder</a>
+      <span style="font-size:13.5px;color:var(--muted)">&larr; drag this to your bookmarks bar,
+      then click it while on any mindat.org page</span>
+    </div>
+    <details>
+      <summary style="cursor:pointer;font-size:13.5px;color:var(--muted)">Can't drag it? (phones, some browsers)</summary>
+      <p class="note" style="margin:10px 0 8px">Make any bookmark, edit it, and replace its URL with:</p>
+      <div class="urlbox" id="bmlcode">javascript:(function(){var s=document.createElement('script');s.src='https://crawlerkarl.github.io/mindat-photo-finder/intersect.js?v='+Date.now();(document.body||document.documentElement).appendChild(s);})();</div>
+      <div class="actions" style="margin-top:8px"><button class="btn" id="bmlcopy" type="button">Copy bookmarklet code</button></div>
+    </details>
+    <p class="note" style="margin:0">Completeness, honestly stated: a photo is findable only if its
+    caption mentions at least one of your minerals — the final species check is exact, the discovery
+    step depends on captions. The panel repeats this on every finished run.</p>
+  </div>
+
 </div>
 </div>
 
@@ -521,6 +547,14 @@
 </div>
 <script>
 (() => {
+  const bc = document.getElementById('bmlcopy');
+  if (bc) bc.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(document.getElementById('bmlcode').textContent);
+      bc.textContent = 'Copied';
+    } catch { bc.textContent = 'Select the code above and copy manually'; }
+    setTimeout(() => { bc.textContent = 'Copy bookmarklet code'; }, 1800);
+  });
   const btn = document.getElementById('themetoggle');
   const root = document.documentElement;
   const saved = localStorage.getItem('theme');
