@@ -68,6 +68,17 @@ be found this way. The panel repeats this on every finished run.
 Example run: Fluorite + Baryte + Sphalerite in Tennessee → 82 specimen photos
 in ~3 minutes (36 page views).
 
+**Browser support:** Chrome, Edge, Firefox, Safari (desktop). The DuckDuckGo
+browser can't run it — it navigates to `javascript:` bookmarks instead of
+executing them and has no extensions to substitute.
+
+**On a phone:** three routes, detailed on the tool page — iOS Safari via the
+bookmark-edit trick; Android Chrome by typing the bookmark's name in the
+address bar (menu launch navigates, only the omnibox suggestion executes);
+or install [intersect.user.js](https://crawlerkarl.github.io/mindat-photo-finder/intersect.user.js)
+in a userscript manager (Tampermonkey on Firefox Android, the "Userscripts"
+extension on iOS) for a persistent ◆ Finder button on every mindat page.
+
 ## How it works
 
 It builds a `photosearch.php` query string and opens it on mindat.org:

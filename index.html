@@ -424,6 +424,37 @@
     Edge, Firefox, Safari (desktop). <strong style="color:var(--ink)">Doesn't work in:</strong>
     DuckDuckGo browser and most mobile in-app browsers &mdash; they refuse
     <code>javascript:</code> bookmarks by design.</p>
+    <h2 style="margin-top:6px">On a phone</h2>
+    <p class="note" style="margin:0">Mobile browsers have no bookmarks bar, but three routes work.
+    The panel itself is phone-sized.</p>
+    <details>
+      <summary style="cursor:pointer;font-size:13.5px;color:var(--muted)"><strong style="color:var(--ink)">iPhone / iPad &mdash; Safari</strong> (no installs, ~1 min)</summary>
+      <ol style="margin:10px 0 0;padding-left:20px;font-size:13.5px;color:var(--muted);display:flex;flex-direction:column;gap:5px">
+        <li>On this page, tap <em>Copy the bookmarklet code</em> above</li>
+        <li>Bookmark any page (Share &rarr; Add Bookmark), then Bookmarks &rarr; Edit &rarr; open that
+          bookmark, rename it <em>Mineral Finder</em> and replace its address with the pasted code</li>
+        <li>On any mindat.org page: Bookmarks &rarr; tap <em>Mineral Finder</em> &mdash; the panel opens
+          in place</li>
+      </ol>
+    </details>
+    <details>
+      <summary style="cursor:pointer;font-size:13.5px;color:var(--muted)"><strong style="color:var(--ink)">Android &mdash; Chrome</strong> (the address-bar trick)</summary>
+      <ol style="margin:10px 0 0;padding-left:20px;font-size:13.5px;color:var(--muted);display:flex;flex-direction:column;gap:5px">
+        <li>Add the bookmark with the pasted code as its URL (or let it sync from desktop Chrome),
+          named something short like <em>mmf</em></li>
+        <li>On a mindat.org page, tap the address bar, type <em>mmf</em>, and tap the bookmark in the
+          suggestions. <strong>This is the trick:</strong> launching it from the bookmarks <em>menu</em>
+          navigates instead of running &mdash; only the address-bar suggestion executes it on the
+          current page</li>
+      </ol>
+    </details>
+    <details>
+      <summary style="cursor:pointer;font-size:13.5px;color:var(--muted)"><strong style="color:var(--ink)">Userscript</strong> &mdash; smoothest for repeat use (Firefox&nbsp;Android&nbsp;+&nbsp;Tampermonkey, iOS&nbsp;&ldquo;Userscripts&rdquo;&nbsp;extension)</summary>
+      <p class="note" style="margin:10px 0 0">Install
+        <a href="https://crawlerkarl.github.io/mindat-photo-finder/intersect.user.js">intersect.user.js</a>
+        in your userscript manager. Every mindat.org page then shows a floating
+        <em>&#9670;&nbsp;Finder</em> button &mdash; tap it to open the panel. No bookmarklet needed.</p>
+    </details>
     <p class="note" style="margin:0">Completeness, honestly stated: a photo is findable only if its
     caption mentions at least one of your minerals — the final species check is exact, the discovery
     step depends on captions. The panel repeats this on every finished run.</p>

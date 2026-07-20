@@ -212,7 +212,7 @@
   :host { all: initial; }
   * { box-sizing: border-box; margin: 0; }
   .drawer {
-    position: fixed; top: 0; right: 0; height: 100vh; width: min(480px, 100vw);
+    position: fixed; top: 0; right: 0; height: 100vh; height: 100dvh; width: min(480px, 100vw);
     z-index: 2147483000; display: flex; flex-direction: column;
     background: #17151C; color: #EDEAF3;
     font: 14px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
@@ -270,6 +270,13 @@
   .ft button:hover { border-color:#9C94AB; }
   .ft .n { color:#9C94AB; font-size:12px; flex:1; }
   datalist { display:none; }
+  /* Phones: 16px inputs stop iOS Safari's auto-zoom on focus; roomier taps. */
+  @media (max-width: 520px) {
+    .chips input, .fld input, .fld select { font-size: 16px; }
+    .chip { font-size: 15px; padding: 5px 8px 5px 13px; }
+    .go { padding: 13px; }
+    .runbtns button, .ft button { padding: 11px; }
+  }
   .min { position:fixed; bottom:18px; right:18px; z-index:2147483000; background:#A585E8;
     color:#17151C; border:none; border-radius:999px; padding:12px 18px;
     font:600 14px/1 system-ui,sans-serif; cursor:pointer; box-shadow:0 6px 24px rgba(0,0,0,.4); display:none; }
